@@ -24,13 +24,26 @@ int main(int argc, char * argv[]){
     int min_year = atoi(argv[4]);
     int flag = atoi(argv[5]);
     int workers = atoi(argv[6]);
-    printf("input %s\n",input);
-    printf("output %s\n",output);
-    printf("min_price %f\n",min_price);
-    printf("min_year %d\n",min_year);
-    printf("flag %d\n",flag);
-    printf("workers %d\n",workers);
+    int pid;
+    if(flag){
+        printf("input %s\n",input);
+        printf("output %s\n",output);
+        printf("min_price %f\n",min_price);
+        printf("min_year %d\n",min_year);
+        printf("workers %d\n",workers);
+    }
+    int fd[2];
+    pipe(fd);
+    pid=fork();
+    char buffer[100] = "Se pudo leer ctm";
+    if(pid == 0) {
+        dup2(fd[0],STDIN_FILENO);
 
+        close(fd[0]);
+        execl("./worker", "./worker", NULL);
+    }else{
+        write(fd[1],buffer,sizeof(char)*100);
+    }
     //genera n pipes con dupe
     //genera los n workers
     //lee el csv (linea x linea)
