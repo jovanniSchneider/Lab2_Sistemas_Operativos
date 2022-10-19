@@ -45,7 +45,19 @@ int main(int argc, char * argv[]){
         write(fd[1],buffer,sizeof(char)*100);
     }
     //genera n pipes con dupe
-    //genera los n workers
+//    int pipes[workers][2];
+//    for(int i = 0; i<workers;i++){
+//        pipe(pipes[i]);
+//    }
+//
+//    //genera los n workers
+//    for(int i = 0; i<workers;i++){
+//        pid = fork();
+//        if(pid == 0){
+//
+//        }
+//    }
+
     //lee el csv (linea x linea)
     return 0;
 }
