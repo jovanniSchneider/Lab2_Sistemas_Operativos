@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hijo.c"
-#include "padre.c"
+#include "fworker.c"
+#include "fbroker.c"
 #include <sys/wait.h>
 #include <unistd.h>
 
@@ -12,12 +12,14 @@ int main(int argc, char * argv[]) {
     float min_price = 0;
     int min_year = -1;
     int flag = 0;
-    if(validate(argc,argv,input,output,&min_price,&min_year,&flag)){
+    int workers;
+    if(validate(argc,argv,input,output,&min_price,&min_year,&flag,&workers)){
         if(flag){
             printf("Archivo de entrada: %s\n",input);
             printf("Archivo de salida : %s\n",output);
             printf("Ano de inicio: %d\n",min_year);
             printf("Precio minimo: %f\n",min_price);
+            printf("Workers: %d\n",workers);
             printf("Flag: %d\n",flag);
         }
         int fd[2];

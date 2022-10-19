@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "hash.h"
 
+//LEER CSV LINEA X LINEA
+//GENERAR WORKERS
 
 //Entradas Char* del nombre del archivo
 //Salidas TdaLista ** que trabaja como una tabla hash
