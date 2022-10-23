@@ -4,22 +4,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-// Entradas: char*
-// Salidas: int
-// Descripción: separa un string hasta obtener el dato que representa el year
-int getYear(char * string) {
-    char string2[150];
-    strcpy(string2,string);
-    char separacion[2] = ",";
-    char * pedacito;
-    int year;
-    pedacito = strtok(string2,separacion);//980830,Spirit Hunter: Death Mark,18,50.0,False,2019,False,Yes,No,No
-    for (int i = 0; i<5;i++){
-        pedacito = strtok(NULL,separacion);
-    }
-    year = atoi(pedacito);
-    return year;
-}
+
 
 char * getGenerico(char * string, int posicion){
     char string2[150];
@@ -44,23 +29,6 @@ int convertirBool(char string[10]) {
         return 0;
     }
     return -1;
-}
-
-//Entradas: string
-//Salidas: float
-//Descripcion: separa un string hasta obtener el dato que representa el precio
-float getPrice(char * string){
-    char string2[150];
-    strcpy(string2,string);
-    char separacion[2] = ",";
-    char * pedacito;
-    float price;
-    pedacito = strtok(string2,separacion);//980830,Spirit Hunter: Death Mark,18,50.0,False,2019,False,Yes,No,No
-    for (int i = 0; i<3;i++){
-        pedacito = strtok(NULL,separacion);
-    }
-    price = atof(pedacito);
-    return price;
 }
 
 // Entradas: entra un char*

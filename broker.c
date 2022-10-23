@@ -2,11 +2,13 @@
 // Created by bull on 19-10-22.
 //
 //main que usa fbroker
+#include "fbroker.c"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
 /*
  * i input
  * o output
@@ -32,32 +34,22 @@ int main(int argc, char * argv[]){
         printf("min_year %d\n",min_year);
         printf("workers %d\n",workers);
     }
-    int fd[2];
-    pipe(fd);
-    pid=fork();
-    char buffer[100] = "Se pudo leer ctm";
-    if(pid == 0) {
-        dup2(fd[0],STDIN_FILENO);
-
-        close(fd[0]);
-        execl("./worker", "./worker", NULL);
-    }else{
-        write(fd[1],buffer,sizeof(char)*100);
-    }
     //genera n pipes con dupe
-//    int pipes[workers][2];
-//    for(int i = 0; i<workers;i++){
-//        pipe(pipes[i]);
-//    }
-//
-//    //genera los n workers
-//    for(int i = 0; i<workers;i++){
-//        pid = fork();
-//        if(pid == 0){
-//
-//        }
-//    }
-
+    int pipes[workers][2];
+    for(int i = 0; i<=workers;i++){
+        pipe(pipes[i]);
+        //genera los n workers
+        pid = fork();
+        if(pid == 0){
+            close(pipes[i][1]);
+            dup2(pipes[i][0],STDIN_FILENO);
+            //close(pipes[i][0]);
+            execl("./worker", "./worker", NULL);
+        }else {
+            close(pipes[i][0]);
+        }
+    }
+    leerCSV(input,min_year,min_price,pipes,workers);
     //lee el csv (linea x linea)
     return 0;
 }
