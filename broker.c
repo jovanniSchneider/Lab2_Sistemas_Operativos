@@ -26,7 +26,7 @@ int main(int argc, char * argv[]){
     int flag = atoi(argv[5]);
     int workers = atoi(argv[6]);
     int pid;
-//    year ** tablaHash = crearHash(min_year);
+
 //    int size = snprintf(NULL,0,"%p",tablaHash);
 //    char * buffer = calloc(size+1,1);
 //    sprintf(buffer,"%p",tablaHash);
@@ -47,14 +47,17 @@ int main(int argc, char * argv[]){
         pipe(pipesLectura[i]);
         //genera los n workers
         pid = fork();
-        if(pid == 0){
-            close(pipes[i][1]);
-            dup2(pipes[i][0],STDIN_FILENO);
-            execlp("./worker", "./worker",min_year, NULL);
-        }else {
-            close(pipes[i][0]);
-            //write(pipes[i][1],buffer,sizeof(char)*15);
-        }
+        if(pid == 0) {
+            close(pipesEscritura[i][1]);
+            dup2(pipesEscritura[i][0], STDIN_FILENO);
+            dup2(pipesLectura[i][1], 121);
+            fflush(stdout);
+            ja = execlp("./worker", "./worker", argv[4], NULL);
+            if(ja==-1)
+                printf("error de execlp\n");
+            exit(0);
+        }else
+            close(pipesEscritura[i][0]);
     }
     //lee el csv (linea x linea)
     leerCSV(input,min_year,min_price,pipesEscritura,workers);

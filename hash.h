@@ -34,6 +34,12 @@ year ** crearHash(int min_year){
     year ** M=(year**)malloc(sizeof(year*)*(anio-min_year+5));
     for (int i = 0; i < anio-min_year+5; ++i) {
         M[i] = (year*)malloc(sizeof(year));
+        M[i]->access=0;
+        M[i]->totalGamesYear=0;
+        M[i]->mac = 0;
+        M[i]->win = 0;
+        M[i]->lix = 0;
+        strcpy(M[i]->free,"");
     }
     return M;
 }
