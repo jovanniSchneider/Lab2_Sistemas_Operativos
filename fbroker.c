@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//#include "hash.h"
+#include <time.h>
+#include <math.h>
 
 //LEER CSV LINEA X LINEA
 //GENERAR WORKERS
@@ -58,12 +59,15 @@ void leerCSV(char nombreArchivo[30],int min_year,int min_price, int fd[][2],int 
     FILE* fp;
     fp= fopen(nombreArchivo,"r");
     char string[150];
+    int lineas = 0;
     while(fgets(string,150,fp)!=NULL){
         if(getYear(string)>= min_year && getPrice(string) >= min_price){
+            lineas++;
             write(fd[myRandom(workers)][1],string,sizeof(string));
         }
     }
-    strcpy(string,"Fin");
+    printf("Lineas leidas = %d\n",lineas);
+    strcpy(string,"FIN");
     for(int i=0;i<=workers;i++){
         write(fd[i][1],string,sizeof(string));
     }

@@ -7,15 +7,19 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include "hash.h"
 
 int main(int argc, char * argv[]){
     char buffer[150];
-    char lineas[10000] = "";
-    do {
+    int lineas = 0;
+    int min_year = atoi(argv[1]);
+    year ** tabla = crearHash(min_year);
+    read(STDIN_FILENO,buffer, sizeof(char)*150);
+    while (strcmp(buffer,"FIN")!=0) {
+
+        lineas++;
         read(STDIN_FILENO,buffer, sizeof(char)*150);
-        strcat(lineas,buffer);
-        strcat(lineas,"\n");
-    } while (strcmp(buffer,"Fin")!=0);
-    printf("\nSoy el proceso %d y me tocaron las lineas\n%s",getpid(),lineas);
+    }
+    printf("\nProceso %d = %d lineas\n",getpid(),lineas);
     return 0;
 }

@@ -6,18 +6,6 @@
 #include <time.h>
 
 
-char * getGenerico(char * string, int posicion){
-    char string2[150];
-    strcpy(string2,string);
-    char separacion[2] = ",";
-    char * pedacito;
-    pedacito = strtok(string2,separacion);//980830,Spirit Hunter: Death Mark,18,50.0,False,2019,False,Yes,No,No
-    for (int i = 0; i<posicion;i++){
-        pedacito = strtok(NULL,separacion);
-    }
-    return pedacito;
-}
-
 // Entradas: char*
 // Salidas: int
 // Descripción: transforma un char* a bool(int 0 o 1)
@@ -46,21 +34,6 @@ int digitValidate(char * string) {
     return 1;
 }
 
-
-//Entradas: void
-//Salidas: Un entero que representa el year actual del SO
-//Descripcion: Cmediante funciones de time.h obtiene el year
-int getActualYear(){
-    time_t t;
-    struct tm *tm;
-    char y[100];
-    int year;
-    t=time(NULL);
-    tm=localtime(&t);
-    strftime(y, 100, "%Y", tm);
-    year = atoi(y);
-    return year;
-}
 
 // Entradas: parametros ingresados por consola los cuales podrian variar segun la entrada del usuario
 // Salidas: int 0 o 1
