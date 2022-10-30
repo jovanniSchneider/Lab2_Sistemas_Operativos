@@ -8,7 +8,6 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "hash.h"
 /*
  * i input
  * o output
@@ -38,10 +37,14 @@ int main(int argc, char * argv[]){
         printf("min_year %d\n",min_year);
         printf("workers %d\n",workers);
     }
-    //genera n pipes con dupe
-    int pipes[workers][2];
-    for(int i = 0; i<workers;i++){
-        pipe(pipes[i]);
+    //genera n pipes para enviar la info con dupe
+    int pipesEscritura[workers][2];
+    int pipesLectura[workers][2];
+    int ja;
+    int i;
+    for( i = 0; i<workers;i++){
+        pipe(pipesEscritura[i]);
+        pipe(pipesLectura[i]);
         //genera los n workers
         pid = fork();
         if(pid == 0){
@@ -53,7 +56,17 @@ int main(int argc, char * argv[]){
             //write(pipes[i][1],buffer,sizeof(char)*15);
         }
     }
-    leerCSV(input,min_year,min_price,pipes,workers);
     //lee el csv (linea x linea)
+    leerCSV(input,min_year,min_price,pipesEscritura,workers);
+    for( i=0;i<workers;i++){
+        wait(NULL);
+    }
+    //ahora con todos los juegos entregados,se recolectan los resultados de cada worker
+    year ** tablaHash = crearHash(min_year);
+    //llamar a recolectar datos
+    recolectarDatos(tablaHash,pipesLectura,workers,min_year);
+    //pasar de la tabla al txt de salida
+
+
     return 0;
 }

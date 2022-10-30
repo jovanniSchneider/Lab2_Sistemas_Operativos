@@ -38,6 +38,12 @@ year ** crearHash(int min_year){
     return M;
 }
 
+int getSize(int min_year){
+    int anio = getActualYear();
+    int size = anio-min_year+5;
+    return size;
+}
+
 //Entradas: string,tabla hash, int, int
 //Salidas: void
 //Descripcion: inserta un dato en la tabla hash.

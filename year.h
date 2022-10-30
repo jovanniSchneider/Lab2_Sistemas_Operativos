@@ -3,11 +3,11 @@
 typedef struct year{
     int access;
     int year;
-    char * moreExpensive;
+    char moreExpensive[100];
     float priceEx;
-    char * cheaper;
-    float * priceCh;
-    char ** free;
+    char cheaper[100];
+    float  priceCh;
+    char free[1000];
     int totalGamesYear;
     float win;
     float mac;
