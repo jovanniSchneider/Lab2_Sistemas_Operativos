@@ -31,13 +31,6 @@ int main(int argc, char * argv[]){
 //    int size = snprintf(NULL,0,"%p",tablaHash);
 //    char * buffer = calloc(size+1,1);
 //    sprintf(buffer,"%p",tablaHash);
-    if(flag){
-        printf("input %s\n",input);
-        printf("output %s\n",output);
-        printf("min_price %f\n",min_price);
-        printf("min_year %d\n",min_year);
-        printf("workers %d\n",workers);
-    }
     //genera n pipes para enviar la info con dupe
     int pipesEscritura[workers][2];
     int pipesLectura[workers][2];
@@ -52,7 +45,7 @@ int main(int argc, char * argv[]){
             dup2(pipesEscritura[i][0], STDIN_FILENO);
             dup2(pipesLectura[i][1], 121);
             fflush(stdout);
-            ja = execlp("./worker", "./worker", argv[4], NULL);
+            ja = execlp("./worker", "./worker", argv[4], argv[5], NULL);
             if(ja==-1)
                 printf("error de execlp\n");
             exit(0);

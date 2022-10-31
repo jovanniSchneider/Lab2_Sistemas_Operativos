@@ -71,11 +71,12 @@ void trabajarLinea(year ** tabla, char linea[250], int min_year){
             strcpy(tabla[position]->cheaper,string);
             tabla[position]->priceCh = atof(getGenerico(linea,3));
         }
-        //aumenta la cantidad de juegos procesados
-        tabla[position]->totalGamesYear++;
         //year nombrecaro preciocaro nombrebarato preciobarato gratis1,gratis2....,gratisN windows mac linux gamesYear
         // 1      2           3          4              5              6                    7       8    9       10
     }
+    //aumenta la cantidad de juegos procesados
+    tabla[position]->totalGamesYear=tabla[position]->totalGamesYear+1;
+    tabla[position]->acum+= atof(getGenerico(linea,3));
     //Verifica si esta para windows
     if(convertirBool(getGenerico(linea,7))){
         tabla[position]->win ++;
@@ -91,7 +92,7 @@ void trabajarLinea(year ** tabla, char linea[250], int min_year){
     //Verifica si esta gratis
     if(convertirBool(getGenerico(linea,6))){
         if(strcmp(tabla[position]->free,"")!=0){
-            strcat(tabla[position]->free, ",");
+            strcat(tabla[position]->free, "\n");
         }
         strcat(tabla[position]->free, getGenerico(linea,1));
     }
@@ -122,6 +123,9 @@ void toString(year * anio,char string[1000]){
         strcat(string,string2);
         strcat(string, "*");
         sprintf(string2,"%d", anio->totalGamesYear);
+        strcat(string, string2);
+        strcat(string, "*");
+        gcvt(anio->acum,5,string2);
         strcat(string, string2);
     }else
         strcat(string,"ND");

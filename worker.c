@@ -13,6 +13,7 @@ int main(int argc, char * argv[]){
     char out[1000];
     int lineas = 0;
     int min_year = atoi(argv[1]);
+    int flag = atoi(argv[2]);
     year ** tabla = crearHash(min_year);
     read(STDIN_FILENO,buffer, sizeof(char)*150);
     while (strcmp(buffer,"FIN")!=0) {
@@ -32,6 +33,7 @@ int main(int argc, char * argv[]){
     }
     strcpy(out,"FIN2");
     write(121,out, sizeof(out));
-    printf("\nProceso %d = %d lineas\n",getpid(),lineas);
+    if(flag)
+        printf("\nProceso %d = %d Lineas procesadas\n",getpid(),lineas);
     return 0;
 }

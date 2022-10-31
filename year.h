@@ -7,7 +7,7 @@ typedef struct year{
     float priceEx;
     char cheaper[100];
     float  priceCh;
-    char free[1000];
+    char free[1500];
     int totalGamesYear;
     float win;
     float mac;

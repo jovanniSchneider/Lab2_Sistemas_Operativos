@@ -39,6 +39,7 @@ year ** crearHash(int min_year){
         M[i]->mac = 0;
         M[i]->win = 0;
         M[i]->lix = 0;
+        M[i]->acum = 0;
         strcpy(M[i]->free,"");
     }
     return M;
