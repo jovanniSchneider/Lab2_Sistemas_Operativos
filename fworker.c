@@ -55,7 +55,6 @@ void trabajarLinea(year ** tabla, char linea[250], int min_year){
         strcpy(tabla[position]->cheaper, string);
         tabla[position]->priceEx = atof(getGenerico(linea, 3));
         tabla[position]->priceCh = tabla[position]->priceEx;
-        tabla[position]->totalGamesYear = 1;
     }else{
         //printf("voy\n");
         //Se guarda nombre y precio en un string

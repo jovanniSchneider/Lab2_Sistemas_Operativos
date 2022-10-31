@@ -2,7 +2,6 @@
 // Created by bull on 19-10-22.
 //
 //main que usa al fworker
-// https://github.com/shaaadoow/Sistemas-Operativos/blob/main/Lab2/lab2.c
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

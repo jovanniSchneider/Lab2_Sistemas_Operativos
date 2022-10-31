@@ -78,9 +78,9 @@ void leerCSV(char nombreArchivo[30],int min_year,int min_price, int fd[][2],int 
 // Salidas: char*
 // Descripción: realiza strtok una cantida N de veces para obtener un dato de la salida
 char * getGenerico(char * string, int posicion){
-    //year nombrecaro preciocaro nombrebarato preciobarato gratis1,gratis2....,gratisN windows mac linux gamesYear
-    // 0      1           2          3              4              5                    6      7   8    9
-    char string2[150];
+    //year nombrecaro preciocaro nombrebarato preciobarato gratis1,gratis2....,gratisN windows mac linux gamesYear acum
+    // 0      1           2          3              4              5                    6      7     8     9        10
+    char string2[250];
     strcpy(string2,string);
     char separacion[2] = "*";
     char * pedacito;
@@ -94,8 +94,8 @@ char * getGenerico(char * string, int posicion){
 //Salida void
 //Descripcion lee los N pipes, almacenando los resultados en la hash entregada.
 void recolectarDatos(year ** tabla, int fd[][2],int workers, int min_year){
-    //year nombrecaro preciocaro nombrebarato preciobarato gratis1,gratis2....,gratisN windows mac linux gamesYear
-    // 0      1           2          3              4              5                    6      7   8    9
+    //year nombrecaro preciocaro nombrebarato preciobarato gratis1,gratis2....,gratisN windows mac linux gamesYear acum
+    // 0      1           2          3              4              5                    6      7   8    9           10
     int cantFin2=0;
     int i;
     char string[1000];
@@ -103,93 +103,135 @@ void recolectarDatos(year ** tabla, int fd[][2],int workers, int min_year){
     int posicion;
     float priceEX;//precio caro
     float priceCH;//precio barato
-    float w,m,l,gy;
+    float w,m,l,ac;
+    int gy;
     int lectura;
-    printf("\nbroker entro en recolectar datos\n");
+    int ciclo=0;
+    int * flag = (int*)malloc(sizeof(int)*workers);
+    for(i=0;i<workers;i++){
+        flag[i]=0;
+    }
     while(cantFin2!=workers){
         for(i=0;i<workers;i++){
-            lectura = read(fd[i][0],string, sizeof(string));
-            //printf("%s\n",string);
-            if( (strcmp(string,"FIN2") !=0) && (lectura != 0 ) && (strcmp(string,"ND") !=0)){
-                //obtengo el year y la posicion correspondiente
-                yearActual=atoi(getGenerico(string,0));
-                posicion= hashFunction(yearActual,min_year);
+            if(flag[i]){
+                continue;
+            }else{
+                lectura = read(fd[i][0], string, sizeof(string));
+                if ((strcmp(string, "FIN2") != 0) && (lectura != 0) && (strcmp(string, "ND") != 0)) {
+                    //obtengo el year y la posicion correspondiente
+                    yearActual = atoi(getGenerico(string, 0));
+                    posicion = hashFunction(yearActual, min_year);
 
-                //obtengo los precios del mas barato y mas caro
-                priceEX= atof(getGenerico(string,2));
-                priceCH= atof(getGenerico(string,4));
+                    //obtengo los precios del mas barato y mas caro
+                    priceEX = atof(getGenerico(string, 2));
+                    priceCH = atof(getGenerico(string, 4));
 
-                if(tabla[posicion]->access==0){//si no habia entrado en esta posicion relleno con estos datos
-                    tabla[posicion]->year= yearActual;
-                    tabla[posicion]->priceEx=0;
-                    tabla[posicion]->priceCh=priceEX+1;
-                }
+                    if (tabla[posicion]->access == 0) {//si no habia entrado en esta posicion relleno con estos datos
+                        tabla[posicion]->access =1;
+                        tabla[posicion]->year = yearActual;
+                        tabla[posicion]->priceEx = priceEX;
+                        tabla[posicion]->priceCh = priceEX;
+                    }
 
-                //obtengo la cantidad de juegos por cada SO y la cantidad de juegos procesador en el year
-                w= atof(getGenerico(string,6));
-                m= atof(getGenerico(string,7));
-                l= atof(getGenerico(string,8));
-                gy= atoi(getGenerico(string,9));
-                //ahora modificamos los datos almacenados en la tabla para este year
-                //si tengo un juego mas caro que el anterior
-                if(tabla[posicion]->priceEx<priceEX){
-                    //reemplazo el nombre
-                    strcpy(tabla[posicion]->moreExpensive,getGenerico(string,2));
-                    //reemplazo el precio
-                    tabla[posicion]->priceEx=priceEX;
-                }
-                //si tengo un juego mas barato que el anterior
-                if(tabla[posicion]->priceCh>priceCH){
-                    //reemplazo el nombre
-                    strcpy(tabla[posicion]->cheaper,getGenerico(string,4));
-                    //reemplazo el precio
-                    tabla[posicion]->priceCh=priceCH;
-                }
-                //agrego la nueva lista de gratis
-                if(strcmp(getGenerico(string,5),"@")!=0){//hay juegos que agregar
-                    if(strcmp(tabla[posicion]->free,"")!=0){//si ya hay juegos entonces agrego una ,
-                        strcat(tabla[posicion]->free,",");
-                    }//agrego los juegos nuevos luego de la ,
-                    strcat(tabla[posicion]->free, getGenerico(string,5));
-                }
-                //aumento la cantidad de juegos por cada SO y por el year
-                tabla[posicion]->lix = tabla[posicion]->lix + l;
-                tabla[posicion]->win = tabla[posicion]->win + w;
-                tabla[posicion]->mac = tabla[posicion]->mac + m;
-                tabla[posicion]->totalGamesYear = tabla[posicion]->totalGamesYear +gy;
-            }
-            else{
-                if(strcmp(string,"FIN2")==0){
-                    printf("Termine el pipe\n");
-                    cantFin2++;
+                    //obtengo la cantidad de juegos por cada SO y la cantidad de juegos procesador en el year
+                    w = atof(getGenerico(string, 6));
+                    m = atof(getGenerico(string, 7));
+                    l = atof(getGenerico(string, 8));
+                    gy = atoi(getGenerico(string, 9));
+                    ac = atof(getGenerico(string, 10));
+                    //ahora modificamos los datos almacenados en la tabla para este year
+                    //si tengo un juego mas caro que el anterior
+                    if (tabla[posicion]->priceEx <= priceEX) {
+                        //reemplazo el nombre
+                        strcpy(tabla[posicion]->moreExpensive, getGenerico(string, 1));
+                        //reemplazo el precio
+                        tabla[posicion]->priceEx = priceEX;
+                    }
+                    //si tengo un juego mas barato que el anterior
+                    if (tabla[posicion]->priceCh >= priceCH) {
+                        //reemplazo el nombre
+                        strcpy(tabla[posicion]->cheaper, getGenerico(string, 3));
+                        //reemplazo el precio
+                        tabla[posicion]->priceCh = priceCH;
+                    }
+                    //agrego la nueva lista de gratis
+                    if (strcmp(getGenerico(string, 5), "@") != 0) {//hay juegos que agregar
+                        if(strcmp(tabla[posicion]->free,"")!=0){
+                            strcat(tabla[posicion]->free,"\n");
+                        }
+                        strcat(tabla[posicion]->free, getGenerico(string, 5));
+                    }
+                    //aumento la cantidad de juegos por cada SO y por el year
+                    tabla[posicion]->lix = tabla[posicion]->lix + l;
+                    tabla[posicion]->win = tabla[posicion]->win + w;
+                    tabla[posicion]->mac = tabla[posicion]->mac + m;
+                    tabla[posicion]->totalGamesYear = tabla[posicion]->totalGamesYear + gy;
+                    tabla[posicion]->acum=tabla[posicion]->acum + ac;
+                } else {
+                    if (strcmp(string, "FIN2") == 0) {
+                        flag[i]=1;
+                        cantFin2++;
+                    }
                 }
             }
         }
+        ciclo++;
+
     }
-    printf("\nbroker salio de recolectar datos\n");
 }
+void toString(year* anio,char string[1500]){
+    char string2[13];
+    strcpy(string,"");
+    sprintf(string,"Año %d", anio->year);
+    strcat(string,":\nJuego mas caro: ");
+    strcat(string,anio->moreExpensive);
+    strcat(string," ");
+    gcvt(anio->priceEx,5,string2);
+    strcat(string,string2);
+    strcat(string,"\nJuego mas barato: ");
+    strcat(string, anio->cheaper);
+    strcat(string," ");
+    gcvt(anio->priceCh,5,string2);
+    strcat(string,string2);
+    strcat(string, "\nPromedio de precios: ");
+    gcvt(anio->acum,7,string2);
+    strcat(string,string2);
+    strcat(string,"\nWindows: ");
+    gcvt(anio->win,7,string2);
+    strcat(string,string2);
+    strcat(string,"% Mac: ");
+    gcvt(anio->mac,7,string2);
+    strcat(string,string2);
+    strcat(string,"% Linux: ");
+    gcvt(anio->lix,7,string2);
+    strcat(string,string2);
+    strcat(string,"%\nJuegos gratis:\n");
+    strcat(string,anio->free);
 
-//Entradas TDALista** que simula una tabla hash,char* para el nombre del archivo
-//Salidas int que representa la cantidad de years que si tienen juegos
-//Descripcion crea un archivo que contiene la info de la tabla hash con el nombre ingresado, ademas de calcular
-//             los years con juegos, tambien dejando constancia de donde comienza cada year mediante ftell
-//int crearArchivo(TDAlista** hash, char * nombreSalida, int fd[2],int flag,int min_year){
-//    int largoHash = getActualYear()-min_year+5;
-//    FILE * fp;
-//    fp = fopen(nombreSalida, "w");
-//    int cont = 0;
-//    long puntero;
-//    for(int i=0;i<largoHash;i++){
-//        if(!esListaVacia(hash[i])) {
-//            puntero = ftell(fp);
-//            recorrerLista(hash[i],fp,flag);
-//            cont++;
-//            write(fd[1],&puntero,sizeof(puntero));
-//        }
-//        liberarLista(hash[i]);
-//    }
-//    free(hash);
-//    fclose(fp);
-//    return cont;
-//}
+}
+void crearSalida(year** tabla,int min_year, char output[30], int flag){
+    int len= getSize(min_year);
+    int i;
+    char string[1500];
+    float totalGames;
+    FILE * fp = fopen(output,"w");//salida
+    for(i=0;i<len;i++){//actualizamos los datos a su forma porcentual
+        if(tabla[i]->access==0){
+            continue;
+        }
 
+        totalGames=tabla[i]->totalGamesYear;
+
+        tabla[i]->win=((tabla[i]->win)/totalGames)*100;
+        tabla[i]->lix=((tabla[i]->lix)/totalGames)*100;
+        tabla[i]->mac=((tabla[i]->mac)/totalGames)*100;
+        tabla[i]->acum=(tabla[i]->acum)/totalGames;
+       // printf("total juegos en año %f %d\nw %f l%f m%f\n",totalGames,tabla[i]->year,tabla[i]->win,tabla[i]->lix,tabla[i]->mac);
+
+        toString(tabla[i],string);
+        fprintf(fp,"%s",string);
+        if(flag)
+            printf("%s",string);
+    }
+    fclose(fp);
+}

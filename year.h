@@ -12,4 +12,5 @@ typedef struct year{
     float win;
     float mac;
     float lix;
+    float acum;
 }year;

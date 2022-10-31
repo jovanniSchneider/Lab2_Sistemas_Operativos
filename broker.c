@@ -25,8 +25,9 @@ int main(int argc, char * argv[]){
     int min_year = atoi(argv[4]);
     int flag = atoi(argv[5]);
     int workers = atoi(argv[6]);
-    int pid;
 
+    pid_t worker_pid,wpid;
+    int status=0;
 //    int size = snprintf(NULL,0,"%p",tablaHash);
 //    char * buffer = calloc(size+1,1);
 //    sprintf(buffer,"%p",tablaHash);
@@ -46,8 +47,7 @@ int main(int argc, char * argv[]){
         pipe(pipesEscritura[i]);
         pipe(pipesLectura[i]);
         //genera los n workers
-        pid = fork();
-        if(pid == 0) {
+        if((worker_pid = fork()) == 0) {
             close(pipesEscritura[i][1]);
             dup2(pipesEscritura[i][0], STDIN_FILENO);
             dup2(pipesLectura[i][1], 121);
@@ -61,15 +61,14 @@ int main(int argc, char * argv[]){
     }
     //lee el csv (linea x linea)
     leerCSV(input,min_year,min_price,pipesEscritura,workers);
-    for( i=0;i<workers;i++){
-        wait(NULL);
-    }
+    while((wpid=wait(&status))>0);
     //ahora con todos los juegos entregados,se recolectan los resultados de cada worker
     year ** tablaHash = crearHash(min_year);
     //llamar a recolectar datos
     recolectarDatos(tablaHash,pipesLectura,workers,min_year);
-    //pasar de la tabla al txt de salida
 
+    //pasar de la tabla al txt de salida
+    crearSalida(tablaHash,min_year,output,flag);
 
     return 0;
 }
